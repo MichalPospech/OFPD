@@ -1,0 +1,6 @@
+{
+	"image": "minizinc/minizinc:latest-alpine",
+	"extensions": [
+		"dekkerone.minizinc"
+	]
+}
