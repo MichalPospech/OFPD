@@ -1,6 +1,6 @@
 # Optimal Financial Portfolio Design
 
-Credit assignment for NOPT042 class at Charles University
+Credit assignment for [NOPT042](https://ktiml.mff.cuni.cz/~bulin/csp/) class at Charles University
 
 ## Problem description 
 
