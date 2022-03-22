@@ -12,7 +12,7 @@ int: rv_b_mod = r*v mod b;
 int: numerator = ceil_sq * rv_b_mod + floor_sq * (b - rv_b_mod) - r*v;
 int: bound = ceil(numerator / (v*(v-1)));
 
-var bound..b: max_intersect;
+var bound..b: lambda;
 
 
 constraint forall (i in 1..v)(
@@ -25,14 +25,13 @@ constraint forall (i in 1..v)(
 
 
 
-%Constraint with symmetry breaking
-constraint forall (i,j in 1..v where i<j)(
-    sum([portfolios[i,k]*portfolios[j,k] | k in 1..b]) <= max_intersect
-);
+constraint max(i,j in 1..v where i<j)(
+    sum([portfolios[i,k]*portfolios[j,k] | k in 1..b]) 
+) = lambda;
 
-constraint forall (i,j in 1..v where i<j)(
-    card(portfolios_sets[i] intersect portfolios_sets[j]) <= max_intersect
-);
+constraint max(i,j in 1..v where i<j)(
+    card(portfolios_sets[i] intersect portfolios_sets[j])
+) = lambda;
 
 
 
@@ -41,10 +40,11 @@ constraint forall (i,j in 1..v where i<j)(
 include "lex2.mzn";
 constraint symmetry_breaking_constraint(lex2(portfolios));
 
+%Channeling
 include "link_set_to_booleans.mzn";
-constraint symmetry_breaking_constraint( forall (i in 1..v)(
+constraint forall (i in 1..v)(
     link_set_to_booleans(portfolios_sets[i], row(portfolios,i))
-));
+);
 
 
 solve ::
@@ -56,6 +56,6 @@ solve ::
             set_search(
                 portfolios_sets, input_order, indomain_max
             ),
-            int_search([max_intersect], input_order, indomain_min)
+            int_search([lambda], input_order, indomain_min)
         ]
-    ) minimize max_intersect;
+    ) minimize lambda;
