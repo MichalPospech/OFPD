@@ -24,6 +24,6 @@ First conditions are also quite straightforward. There are 2 conditions to ensur
 Then there are some conditions, that are more complex. First, the bounds on the $\lambda$ variable. The lower bound is calculated based on a Theorem 1 from a [paper](https://www.it.uu.se/research/group/astra/publications/Constraints07-CDO.pdf) by Flener.
 Following that there is a symmetry breaking condition, that says, that the matrix $P$ must have both rows and columns in lexicographic order. This can be done thanks to the Theorem 2 from [paper](http://www.it.uu.se/research/group/astra/SymCon02/Proceedings/KiziltanSmith.pdf) by Kiltzian which applies because the row-sums are constant.
 
-
+Last there is a channeling constraint that joins the set and matrix representations of the problem. This may help the solver by allowing it to use 2 types of conditions.
 ## Results
 ???
