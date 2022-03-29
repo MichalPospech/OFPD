@@ -1,6 +1,9 @@
+%parameters
 int: v;
 int: b;
 int: r;
+
+%two representations of the problem
 array[1..v,1..b]  of var bool: portfolios;
 array[1..v] of var set of 1..b: portfolios_sets; 
 
@@ -14,7 +17,7 @@ int: bound = ceil(numerator / (v*(v-1)));
 
 var bound..b: lambda;
 
-
+% all rows must add up to r
 constraint forall (i in 1..v)(
     sum(row(portfolios,i)) = r
 );
@@ -24,7 +27,7 @@ constraint forall (i in 1..v)(
 );
 
 
-
+% meaning of lambda
 constraint max(i,j in 1..v where i<j)(
     sum([portfolios[i,k]*portfolios[j,k] | k in 1..b]) 
 ) = lambda;
