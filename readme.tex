@@ -20,7 +20,9 @@ On OPD problem is defined by a triplet $(v,b,r)$. The task is to find a matrix $
     \item $\forall i \sum P_{i*} = r$
 \end{itemize}
 
-while minimising the value of $\lambda$. Or in other terms, we are looking for $v$ subsets of cardinality $r$ from a given set of cardinality $b$ such that the cardinality of the largest interesection of differents subsets (denoted as $\lambda$) is minimised.
+while minimising the value of $\lambda$.
+
+Or in other terms, we are looking for $v$ subsets of cardinality $r$ from a given set of cardinality $b$ such that the cardinality of the largest interesection of differents subsets (denoted as $\lambda$) is minimised.
 
 The task was first described by Flener \cite{OFPD}.
 
@@ -34,11 +36,16 @@ The model is quite straightforward given the definition of OPD problem. There ar
 
 First conditions are also quite straightforward. There are 2 conditions to ensure that the sum of rows of $P$ is $r$ and the subsets have cardinality $r$. Then there are 2 conditions that $\lambda$ is the maximum dot product between lines and intersection between 2 subsets as per definition of the problem.
 
-Then there are some conditions, that are more complex. First, the bounds on the $\lambda$ variable. The lower bound is calculated based on a Theorem 1 from a paper by Flener \cite{Design}.
+Then there are some conditions, that are more complex. First, the bounds on the $\lambda$ variable. The lower bound is calculated based on a Theorem 1 from a paper by Flener \cite{Design}. This result says, that
+$$ \lambda \geq \frac{\left\lceil\frac{rv}{b} \right\rceil^2 mod(rv,b) + \left\lfloor\frac{rv}{b} \right\rfloor^2(b-mod(rv,b)) - rv}{v(v-1)}.$$
 
-Following that there is a symmetry breaking condition, that says, that the matrix $P$ must have both rows and columns in lexicographic order. This can be done thanks to the Theorem 2 from paper by Kiltzian \cite{Symmetry} which applies because the row-sums are constant.
+Following that there is a symmetry breaking condition, that says, that the matrix $P$ must have both rows and columns in lexicographic order which is achieved by using constraint \texttt{lex2}. This can be done thanks to the Theorem 2 from paper by Kiltzian \cite{Symmetry}. This result says, that if a 2-d matrix model with symmetries in both columns and rows has a solution then it has a solution that: \begin{itemize}
+    \item has rows ordered by their sums, 
+    \item has columns ordered lexicographically, 
+    \item and has rows with same sums ordered lexicographically.
+\end{itemize}
 
-Last there is a channeling constraint that joins the set and matrix representations of the problem. This may help the solver by allowing it to use 2 types of conditions.
+Last there is a channeling constraint that joins the set and matrix representations of the problem. This may help the solver by allowing it to use 2 types of conditions. This is done using predicate \texttt{link\_set\_to\_booleans} which links a \texttt{set of int} and an \texttt{array of bool} in such way, that value with index $i$ in the array is \texttt{true} in and only iff the set contains $i$.
 
 \section{Results}
 To understand how each component of the model influences efficiency of the solver several experiments were run. This is called an "ablation study".
@@ -47,15 +54,19 @@ To understand how each component of the model influences efficiency of the solve
 
 The inputs used were the two smallest ones (\texttt{small\_bibd\_06\_50\_25.dzn} and \texttt{small\_bibd\_06\_60\_30.dzn}) as bigger inputs were too computationally expensive. Also the search was automatically stopped after 3 hours, this arbitrary limit spans from the limited amount of time I had for running these experiments and lack of computational resources. The experiments were run on a VPS where nothing else was running so the OS scheduler could not really interfere with the results.
 
-\begin{table}[]
+Based on the data collected (see \autoref{table:result}), having better bounds on $\lambda$ makes the solver roughly twice faster. Compared to that, symmetry breaking and having a set-based model seem to be really important for the efficiency as the solver was not able to solve the problem within the allocated timeframe.
+\begin{table}[h]
+    
+    
     \begin{tabular}{l|cccc}
                                  & \texttt{small\_bibd\_06\_50\_25.dzn} & \texttt{small\_bibd\_06\_60\_30.dzn} & \\ \hline
         base                     & 357.397                              & 3173.41                                \\
         only matrix model        & N/A                                  & N/A                                    \\
         no symmetry  breaking    & N/A                                  & N/A                                    \\
-        worse bound on $\lambda$ & 675.644                              & 6235.26
+        worse bound on $\lambda$ ($\lambda\geq 0$) & 675.644                              & 6235.26
     \end{tabular}
     \caption{Tabulated results of the "ablation study" - time to solve in seconds, N/A means no solution found before timelimit}
+    \label{table:result}
 \end{table}
 
 \bibliography{refs}
